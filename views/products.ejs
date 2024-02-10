@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Products</title>
+</head>
+<body>
+    <h1>Welcome, <%= req.session.user.email %>!</h1>
+    <a href="/logout">Logout</a>
+    <h1>Products</h1>
+    <% inventory.forEach(item => { %>
+        <div class="product">
+            <h3><%= item.itemName %></h3>
+            <img src="<%= item.imageUrl %>" alt="<%= item.itemName %>">
+            <p>Price: <%= item[`priceLevel${req.session.user.priceLevel}`] %></p>
+            <input type="number" id="quantity_<%= item.id %>" name="quantity" placeholder="Quantity">
+<button onclick="addToCart('<%= item.id %>')">Add to Cart</button>
+        </div>
+    <% }); %>
+    
+    <!-- Script to handle adding items to cart -->
+    <script>
+        function addToCart(itemId) {
+    var quantity = document.getElementById('quantity_' + itemId).value;
+    var data = {
+        itemId: itemId,
+        quantity: quantity
+    };
+
+    fetch('/add-to-cart', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => {
+        if (response.ok) {
+            // Item added successfully, handle any additional logic
+            console.log('Item added to cart successfully.');
+        } else {
+            console.error('Failed to add item to cart.');
+        }
+    })
+    .catch(error => {
+        console.error('Error adding item to cart:', error);
+    });
+}
+
+    </script>
+    <a href="/cart">View Cart</a>
+</body>
+</html>
